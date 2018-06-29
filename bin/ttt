@@ -5,6 +5,9 @@ var {
 }
 statements {
 	return ;
+{
+	return fim ;
+}
 }
 
 
@@ -21,7 +24,6 @@ statements {
 i: Nao Inicializada
 i: Nao Referenciada
 fim: Nao Inicializada
-fim: Nao Referenciada
 
 
    TABELA  DE  SIMBOLOS:
@@ -31,6 +33,6 @@ Classe 0:
 Classe 13:
   (i, IDVAR, INTEIRO, 0, 0)
 Classe 17:
-  (fim, IDVAR, LOGICO, 0, 0)
+  (fim, IDVAR, LOGICO, 0, 1)
 Classe 22:
   (AnaliseDeTexto, IDPROG)

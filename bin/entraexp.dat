@@ -6,6 +6,9 @@ var {
 }
 statements {
 	return;
+	{
+	return fim;
+	}
 }
 
 main
@@ -15,4 +18,4 @@ var {
 statements {
 
 }
-}}} 
+}}}
