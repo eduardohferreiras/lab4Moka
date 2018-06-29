@@ -1,17 +1,14 @@
 AnaliseDeTexto {{{
 
+var {
+    	char c; logic fim;
+}
+
 void ExibirTabela ()
 var {
 	logic fim;
 }
 statements {
-	return;
-	{
-		return ;
-		{
-			if fim then { return; } else {return fim;}
-		}
-	}
 }
 
 main
@@ -19,6 +16,6 @@ var {
 	int i;
 }
 statements {
-
 }
+
 }}}

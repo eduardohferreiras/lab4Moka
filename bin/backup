@@ -80,7 +80,7 @@ void InicTabSimb (void);
 void ImprimeTabSimb (void);
 simbolo InsereSimb (char *, int, int);
 int hash (char *);
-simbolo ProcuraSimb (char *, char *);
+simbolo ProcuraSimb (char *);
 void DeclaracaoRepetida (char *);
 void TipoInadequado (char *);
 void NaoDeclarado (char *);
@@ -168,10 +168,10 @@ void NaoEsperado (char *);
 
 Prog            :   {InicTabSimb ();}  ID  OPTRIP  {
                         printf ("%s {{{\n", $2);
-                        SetarEscopo("GLOBAL");
                         InsereSimb ($2, IDPROG, NAOVAR);
+                        //SetarEscopo("GLOBAL");
                     }
-                    Decls  {SetarEscopo("GLOBAL");} ModList  MainMod  CLTRIP  {
+                    Decls {//SetarEscopo("INDEF");} ModList  MainMod  CLTRIP  {
                         printf ("}}}\n");
                         VerificaInicRef ();
                         ImprimeTabSimb ();
@@ -199,7 +199,7 @@ ElemList        :   Elem  |  ElemList  COMMA  {printf (", ");}  Elem
 
 Elem        	:	ID {
                         printf ("%s", $1);
-                        if (ProcuraSimb ($1, escopocorrente) != NULL)
+                        if (ProcuraSimb ($1) != NULL)
                             DeclaracaoRepetida ($1);
                         else{
 
@@ -275,12 +275,13 @@ Module          :   ModHeader  ModBody {
                             Incompatibilidade ("Return indevido no escopo da funcao.");
                         }
                     }
-                    SetarEscopo("GLOBAL");
+                   //SetarEscopo("INDEF");
                 }
                 ;
 
-ModHeader       :   Type ID OPPAR  CLPAR { InsereSimb($2, IDFUNC, tipocorrente); printf ("%s ()\n", $2); $$ = tipocorrente; SetarEscopo($2);}
-                |   Type ID OPPAR { InsereSimb($2, IDFUNC, tipocorrente); printf ("%s (", $2); $$ = tipocorrente; SetarEscopo($2);} ParamList  CLPAR {printf (")\n"); }
+ModHeader       :   Type ID OPPAR  CLPAR { InsereSimb($2, IDFUNC, tipocorrente); printf ("%s ()\n", $2); $$ = tipocorrente; //SetarEscopo($2);}
+                |   Type ID OPPAR { InsereSimb($2, IDFUNC, tipocorrente); printf ("%s (", $2); $$ = tipocorrente; } ParamList  CLPAR {printf (")\n");  
+                    //SetarEscopo($2);}
                 ;
 
 ParamList       :   Parameter
@@ -288,12 +289,9 @@ ParamList       :   Parameter
                 ;
 
 Parameter       :   Type  ID {
-                        simb = ProcuraSimb ($2, escopocorrente);
-                        if (simb != NULL) DeclaracaoRepetida ($2);
-                        
-                        simb = InsereSimb ($2, IDVAR, tipocorrente);
-                        simb->array = FALSO; simb->ndims = 0;
-
+                        simb = ProcuraSimb ($2);
+                        if (simb == NULL) NaoDeclarado ($2);
+                        else if (simb->tid != IDVAR) TipoInadequado ($2);
                         printf ("%s ", $2);}
                 ;
 
@@ -301,7 +299,7 @@ Parameter       :   Type  ID {
 ModBody         :   Decls  Stats {$$[0] = $2[0]; $$[1] = $2[1]; $$[2] = $2[2]; $$[3] = $2[3]; $$[4] = $2[4];}
                 ;
 
-MainMod         :   MAIN {printf("main\n"); SetarEscopo("MAIN");} ModBody {SetarEscopo("GLOBAL");}
+MainMod         :   MAIN {printf("main\n"); /* SetarEscopo("MAIN");*/} ModBody {/*SetarEscopo("INDEF");*/}
                 ;
 
 Stats           :   STATEMENTS  {printf ("statements ");tab++;}  CompStat {tab--; $$[0] = $3[0]; $$[1] = $3[1]; $$[2] = $3[2]; $$[3] = $3[3]; $$[4] = $3[4];}
@@ -435,7 +433,7 @@ WriteElem       :   STRING {printf ("%s", $1);} |  Expression
                 ;
 
 CallStat        :   CALL  ID  OPPAR {
-                        simb = ProcuraSimb ($2, "INDEF");
+                        simb = ProcuraSimb ($2);
                         if (simb == NULL) NaoDeclarado ($2);
                         else if (simb->tid != IDFUNC)   TipoInadequado ($2);
                         else if (simb->tvar != FUNCVOID) TipoFuncaoInadequado ($2);
@@ -597,8 +595,7 @@ Factor          :   Variable  {
 
 Variable        :   ID  {
                         printf ("%s ", $1);
-                        simb = ProcuraSimb ($1, escopocorrente);
-                        if( simb == NULL) {simb = ProcuraSimb ($1, "GLOBAL");}
+                        simb = ProcuraSimb ($1);
                         if (simb == NULL) NaoDeclarado ($1);
                         else if (simb->tid != IDVAR) TipoInadequado ($1);
                         $<simb>$ = simb;
@@ -641,7 +638,7 @@ ThreeSubscr     :       TwoSubscr  COMMA {printf (", ");} AuxExpr4 { if ($4 != I
                 ;
 
 FuncCall        :       ID  {
-                            simb = ProcuraSimb ($1, "INDEF");
+                            simb = ProcuraSimb ($1);
                             if (simb == NULL) NaoDeclarado ($1);
                             else if (simb->tid != IDFUNC)   TipoInadequado ($1);
                             else if (simb->tvar == FUNCVOID) TipoFuncaoInadequado ($1);
@@ -667,15 +664,15 @@ void InicTabSimb () {
 }
 
 /*
-    ProcuraSimb (cadeia, escopo): Procura cadeia na tabela de simbolos;
+    ProcuraSimb (cadeia): Procura cadeia na tabela de simbolos;
     Caso ela ali esteja, retorna um ponteiro para sua celula;
     Caso contrario, retorna NULL.
  */
 
-simbolo ProcuraSimb (char *cadeia, char *escopo) {
+simbolo ProcuraSimb (char *cadeia) {
     simbolo s; int i;
     i = hash (cadeia);
-    for (s = tabsimb[i]; (s!=NULL) && strcmp(cadeia, s->cadeia) && strcmp(escopo, s->escopo);
+    for (s = tabsimb[i]; (s!=NULL) && strcmp(cadeia, s->cadeia);
         s = s->prox);
     return s;
 }
@@ -683,7 +680,6 @@ simbolo ProcuraSimb (char *cadeia, char *escopo) {
 void SetarEscopo (char *escopo) {
     escopocorrente = (char*) malloc ((strlen(escopo)+1)*sizeof(char)); 
     strcpy(escopocorrente, escopo);
-
 }
 
 /*
@@ -728,7 +724,7 @@ void ImprimeTabSimb () {
             for (s = tabsimb[i]; s!=NULL; s = s->prox){
                 printf ("  (%s, %s", s->cadeia,  nometipid[s->tid]);
                 if (s->tid == IDVAR){
-                    printf (", %s, Escopo: %s, %d, %d",
+                    printf (", %s, %s, %d, %d",
                         nometipvar[s->tvar], s->escopo, s->inic, s->ref);
                     if (s->array == VERDADE) {
                         int j;
@@ -739,7 +735,7 @@ void ImprimeTabSimb () {
 
                 }
                 if (s->tid == IDFUNC){
-                    printf (", %s, Escopo: %s",nometipvar[s->tvar], s->escopo);
+                    printf (", %s, %s",nometipvar[s->tvar], s->escopo);
                 }
                 printf(")\n");
             }

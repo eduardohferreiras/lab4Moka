@@ -1,28 +1,18 @@
 AnaliseDeTexto {{{
-void ExibirTabela ()
 var {
+	char c;
 	logic fim;
 }
+void ExibirTabela ()
+var {
+	logic fim
+
+***** Declaracao Repetida: fim *****
+
+;
+}
 statements {
-	return ;
-{
-	return ;
-{
-	if fim then 
-	{
-		return ;
-	}
-	else
- 	{
-		return fim ;
-	}
 }
-}
-}
-
-
-***** Incompatibilidade: Return indevido no escopo da funcao. *****
-
 main
 var {
 	int i;
@@ -31,18 +21,23 @@ statements {
 }
 }}}
 
+c: Nao Inicializada
+c: Nao Referenciada
 i: Nao Inicializada
 i: Nao Referenciada
 fim: Nao Inicializada
+fim: Nao Referenciada
 
 
    TABELA  DE  SIMBOLOS:
 
 Classe 0:
-  (ExibirTabela, IDFUNC, FUNCVOID)
+  (ExibirTabela, IDFUNC, FUNCVOID, Escopo: GLOBAL)
+Classe 7:
+  (c, IDVAR, CARACTERE, Escopo: GLOBAL, 0, 0)
 Classe 13:
-  (i, IDVAR, INTEIRO, 0, 0)
+  (i, IDVAR, INTEIRO, Escopo: MAIN, 0, 0)
 Classe 17:
-  (fim, IDVAR, LOGICO, 0, 1)
+  (fim, IDVAR, LOGICO, Escopo: GLOBAL, 0, 0)
 Classe 22:
   (AnaliseDeTexto, IDPROG)
