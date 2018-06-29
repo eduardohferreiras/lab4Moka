@@ -113,7 +113,7 @@ void QuantidadeErradaDeArgumentos();
     int nsubscr;
     int returnedTypes[5];
     int returnedType;
-    lista *paramQueSobe; 
+    lista *paramQueSobe;
 }
 
 %type       <simb>          Variable
@@ -485,7 +485,7 @@ CallStat        :   CALL  ID  OPPAR {
                         lista* aux = $5;
                         int deuRuim = 0;
                         int tamanhoDoSubido = 0;
-                        
+
                         while (aux != NULL)
                         {
                             tamanhoDoSubido ++;
@@ -499,7 +499,7 @@ CallStat        :   CALL  ID  OPPAR {
                         else
                         {
                             aux = $5;
-                            lista* aux2 = simb->param->prox; 
+                            lista* aux2 = simb->param->prox;
                             int i = 0;
                             for(; i < tamanhoDoSubido; i++)
                             {
@@ -511,7 +511,7 @@ CallStat        :   CALL  ID  OPPAR {
                                 aux2 = aux2->prox;
                             }
                         }
-                    
+
                     }
                 ;
 
@@ -538,11 +538,11 @@ AssignStat      :   {tabular ();} Variable
                 ;
 
 
-ExprList		:	Expression { $$->tipo = $1; $$->prox = NULL; }
+ExprList		:	Expression { $$ = (lista*) malloc (sizeof(lista)); $$->tipo = $1; $$->prox = NULL; }
 				|	ExprList  COMMA {printf (", ");}  Expression {
                         $$ = $1;
                         lista *p = $$;
-                        while (p->prox != NULL) {                            
+                        while (p->prox != NULL) {
                             p = p->prox;
                         }
                         p->prox = (lista*) malloc (sizeof(lista));
