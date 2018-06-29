@@ -106,7 +106,7 @@ void NaoEsperado (char *);
 %type       <nsubscr>       Subscripts SubscrList
 
 %type       <returnedTypes> ModBody StatList CompStat Stats
-%type       <returnedType>  Statement ReturnStat ModHeader
+%type       <returnedType>  Statement ReturnStat ModHeader WhileStat IfStat RepeatStat ForStat  ElseStat
 
 %token		<string> ID
 %token 		<string> CHARCT
@@ -317,10 +317,10 @@ StatList        :
                 ;
 
 Statement       :   CompStat {$$ = (5 + ($1[0]==1 ?1:0) + 10*($1[1]==1 ?1:0)+ 100*($1[2]==1 ?1:0)+1000*($1[3]==1 ?1:0)+10000*($1[4]==1 ?1:0));}
-                |   IfStat  {$$ = -1;}
-                |   WhileStat  {$$ = -1;}
-                |   RepeatStat  {$$ = -1;}
-                |   ForStat  {$$ = -1;}
+                |   IfStat  {$$ = $1;}
+                |   WhileStat  {$$ = $1;}
+                |   RepeatStat  {$$ = $1;}
+                |   ForStat  {$$ = $1;}
                 |   ReadStat  {$$ = -1;}
                 |   WriteStat  {$$ = -1;}
                 |   AssignStat  {$$ = -1;}
@@ -334,11 +334,40 @@ IfStat          :  {tabular ();} IF  {printf ("if ");} Expression {
                             Esperado("Expressao logica no cabecalho do IF");
                         }
                     }  THEN {printf ("then \n"); tab++;} Statement ElseStat
+                    {
+                        int bosta[5] ={0};
+                        if ($8 < 5) {
+                            if ($8 >= 0) {
+                                bosta[$8] = 1;
+                            }
+                        } else {
+                            int i=0;
+                            int gambi = $8-5;
+                            for (i=0; i<5; i++) {
+                                bosta[i] = (gambi%10 == 1) ? 1:0;
+                                gambi = gambi/10;
+                            }
+                        }
+
+                        if ($9 < 5) {
+                            if ($9 >= 0) {
+                                bosta[$9] = 1;
+                            }
+                        } else {
+                            int i=0;
+                            int gambi = $9-5;
+                            for (i=0; i<5; i++) {
+                                bosta[i] = (gambi%10 == 1 || bosta[i]==1) ? 1:0;
+                                gambi = gambi/10;
+                            }
+                        }
+                    $$ = (5 + (bosta[0]==1 ?1:0) + 10*(bosta[1]==1 ?1:0)+ 100*(bosta[2]==1 ?1:0)+1000*(bosta[3]==1 ?1:0)+10000*(bosta[4]==1 ?1:0));
+                    }
                 ;
 
 
-ElseStat        :   { tab--;}
-                |   ELSE {tab--; tabular();printf ("else\n ");tab++;} Statement{} {tab--;}
+ElseStat        :   { tab--; $$ = -1;}
+                |   ELSE {tab--; tabular();printf ("else\n ");tab++;} Statement {tab--; $$ = $3;}
                 ;
 
 
@@ -347,11 +376,11 @@ WhileStat       :   {tabular ();} WHILE  {printf ("while ");} Expression {
                         if($4 != LOGICO){
                             Esperado("Expressao logica no cabecalho do WHILE");
                         }
-                    } DO {printf ("do \n");tab++;}  Statement {tab--;}
+                    } DO {printf ("do \n");tab++;}  Statement {tab--; $$ = $8; }
                 ;
 
 
-RepeatStat      :   {tabular ();} REPEAT  {printf ("repeat \n");tab++;} Statement WHILE  {tab--;tabular();printf ("while ");} Expression{
+RepeatStat      :   {tabular ();} REPEAT  {printf ("repeat \n");tab++;} Statement WHILE  {tab--;tabular();printf ("while "); $$ = $4;} Expression{
                         if($7 != LOGICO){
                             Esperado("Expressao logica no enncerramento do REPEAT");
                         }
@@ -375,7 +404,7 @@ ForStat         :   {tabular ();} FOR  {printf ("for ");} Variable {
                         if($16 != INTEIRO && $16 != CARACTERE){
                             Esperado("Terceira expressao do FOR inteira ou caractere");
                             }
-                        }   CLPAR {printf (")\n"); tab++; }  Statement {tab--;}
+                        }   CLPAR {printf (")\n"); tab++; }  Statement {tab--; $$ = $20;}
                 ;
 
 ReadStat        :   READ {tabular(); printf ("read (");} OPPAR  ReadList  CLPAR  SCOLON {printf (");\n");}

@@ -8,7 +8,14 @@ statements {
 {
 	return ;
 {
-	return fim ;
+	if fim then 
+	{
+		return ;
+	}
+	else
+ 	{
+		return fim ;
+	}
 }
 }
 }
