@@ -301,17 +301,22 @@ CompStat        :   OPBRACE  {tab--;tabular();tab++;printf ("{\n");}  StatList  
                     {tab--;tabular ();tab++; printf ("}\n"); $$[0] = $3[0]; $$[1] = $3[1]; $$[2] = $3[2]; $$[3] = $3[3]; $$[4] = $3[4];}
 
 StatList        :
-                |   StatList  Statement {if ($2 != -1) {if ($2 < 5) {$$[$2] = 1;} else {
+                |   StatList  Statement {if ($2 != -1) {
+                if ($2 < 5) {$$[$2] = 1;}
+                else {
                   int i=0;
                   int gambi = $2-5;
                   for (i=0; i<5; i++) {
-                    $$[i] = gambi%10;
+                    $$[i] = (gambi%10 == 1 || $1[i]==1) ? 1:0;
                     gambi = gambi/10;
                   }
-                }}
+                }
+                }
+
+                }
                 ;
 
-Statement       :   CompStat {if (5 + $1[0] + 10*$1[1]+ 100*$1[2]+1000*$1[3]+10000*$1[4] >= 1) { $$=1; });}
+Statement       :   CompStat {$$ = (5 + ($1[0]==1 ?1:0) + 10*($1[1]==1 ?1:0)+ 100*($1[2]==1 ?1:0)+1000*($1[3]==1 ?1:0)+10000*($1[4]==1 ?1:0));}
                 |   IfStat  {$$ = -1;}
                 |   WhileStat  {$$ = -1;}
                 |   RepeatStat  {$$ = -1;}

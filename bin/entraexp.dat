@@ -1,13 +1,16 @@
 AnaliseDeTexto {{{
 
-char ExibirTabela ()
+void ExibirTabela ()
 var {
 	logic fim;
 }
 statements {
 	return;
 	{
-	return fim;
+		return ;
+		{
+			return fim;
+		}
 	}
 }
 

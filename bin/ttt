@@ -1,12 +1,15 @@
 AnaliseDeTexto {{{
-char ExibirTabela ()
+void ExibirTabela ()
 var {
 	logic fim;
 }
 statements {
 	return ;
 {
+	return ;
+{
 	return fim ;
+}
 }
 }
 
@@ -29,7 +32,7 @@ fim: Nao Inicializada
    TABELA  DE  SIMBOLOS:
 
 Classe 0:
-  (ExibirTabela, IDFUNC, CARACTERE)
+  (ExibirTabela, IDFUNC, FUNCVOID)
 Classe 13:
   (i, IDVAR, INTEIRO, 0, 0)
 Classe 17:
