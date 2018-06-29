@@ -4,16 +4,16 @@ var {
    char c; logic fim; int fim;
 }
 
-void ExibirTabela (  )
+void ExibirTabela ( int a, int b, int c , logic d, char e )
 var {
 	logic fim;
 }
 statements {
 }
 
-void c ()
+void cAS ()
 var {
-	logic abac; int abac;
+	logic abac;
 }
 statements {
 }
@@ -23,7 +23,7 @@ var {
 	int i;
 }
 statements {
-	c := i; 
+	c := i;
 }
 
 }}}

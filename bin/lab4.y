@@ -54,6 +54,13 @@ char *nometipvar[6] = {"NAOVAR",
 
 /*    Declaracoes para a tabela de simbolos     */
 
+typedef struct lista lista;
+typedef lista *parametros;
+struct lista {
+    lista *prox;
+    int tipo;
+};
+
 typedef struct celsimb celsimb;
 typedef celsimb *simbolo;
 struct celsimb {
@@ -62,6 +69,7 @@ struct celsimb {
     int tid, tvar, ndims, dims[MAXDIMS+1];
     char inic, ref, array;
     simbolo prox;
+    parametros param;
 };
 
 /*  Variaveis globais para a tabela de simbolos e analise semantica */
@@ -77,6 +85,9 @@ char *escopocorrente;
  */
 int tab = 0;
 void InicTabSimb (void);
+void SetarEscopo(char *escopo);
+void adicionaParametro();
+void TipoFuncaoInadequado(char *s);
 void ImprimeTabSimb (void);
 simbolo InsereSimb (char *, int, int);
 int hash (char *);
@@ -280,23 +291,23 @@ Module          :   ModHeader  ModBody {
                 }
                 ;
 
-ModHeader       :   Type ID OPPAR  CLPAR { 
+ModHeader       :   Type ID OPPAR  CLPAR {
                         simb = ProcuraSimb ($2, "GLOBAL");
                         if(simb != NULL) DeclaracaoRepetida ($2);
                         else { InsereSimb($2, IDFUNC, tipocorrente); }
-                        
-                        printf ("%s ()\n", $2); 
-                        $$ = tipocorrente; 
+
+                        printf ("%s ()\n", $2);
+                        $$ = tipocorrente;
                         SetarEscopo($2);
 
                         }
-                |   Type ID OPPAR { 
+                |   Type ID OPPAR {
                         simb = ProcuraSimb ($2, "GLOBAL");
                         if(simb != NULL) DeclaracaoRepetida ($2);
                         else { InsereSimb($2, IDFUNC, tipocorrente); }
 
-                        printf ("%s (", $2); 
-                        $$ = tipocorrente; 
+                        printf ("%s (", $2);
+                        $$ = tipocorrente;
                         SetarEscopo($2);
 
                         } ParamList  CLPAR {printf (")\n"); }
@@ -307,9 +318,10 @@ ParamList       :   Parameter
                 ;
 
 Parameter       :   Type  ID {
+                        adicionaParametro();
                         simb = ProcuraSimb ($2, escopocorrente);
                         if (simb != NULL) DeclaracaoRepetida ($2);
-                        
+
                         simb = InsereSimb ($2, IDVAR, tipocorrente);
                         simb->array = FALSO; simb->ndims = 0;
 
@@ -701,7 +713,7 @@ simbolo ProcuraSimb (char *cadeia, char *escopo) {
 }
 
 void SetarEscopo (char *escopo) {
-    escopocorrente = (char*) malloc ((strlen(escopo)+1)*sizeof(char)); 
+    escopocorrente = (char*) malloc ((strlen(escopo)+1)*sizeof(char));
     strcpy(escopocorrente, escopo);
 
 }
@@ -722,7 +734,32 @@ simbolo InsereSimb (char *cadeia, int tid, int tvar) {
     strcpy (s->escopo, escopocorrente);
     s->tid = tid;       s->tvar = tvar;
     s->inic = FALSO;    s->ref = FALSO;
+
+    if (tid == IDFUNC) {
+      s->param = (lista*) malloc (sizeof(lista));
+      s->param->prox = NULL;
+      s->param->tipo = 0;
+    } else {
+      s->param = NULL;
+    }
+
     s->prox = aux;  return s;
+}
+
+/*
+  Adiciona parametro
+*/
+void adicionaParametro () {
+  simb = ProcuraSimb(escopocorrente, "GLOBAL");
+  simb->param->tipo++;
+  parametros p = simb->param;
+  while (p->prox != NULL) {
+    p = p->prox;
+  }
+  p->prox = (lista*) malloc (sizeof(lista));
+  p->prox->prox = NULL;
+  p->prox->tipo = tipocorrente;
+
 }
 
 /*
@@ -760,6 +797,19 @@ void ImprimeTabSimb () {
                 }
                 if (s->tid == IDFUNC){
                     printf (", %s, Escopo: %s",nometipvar[s->tvar], s->escopo);
+                    printf(", Quant de parametros: %d", s->param->tipo);
+                    parametros p = s->param->prox;
+                    if (s->param->prox > 0) {
+                      printf(", Tipos dos paramentros: ");
+                      while(p != NULL) {
+                        if (p->prox == NULL) {
+                          printf("%s", nometipvar[p->tipo]);
+                        } else {
+                          printf("%s, ", nometipvar[p->tipo]);
+                        }
+                        p = p->prox;
+                      }
+                    }
                 }
                 printf(")\n");
             }
