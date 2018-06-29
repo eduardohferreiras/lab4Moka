@@ -199,8 +199,9 @@ ElemList        :   Elem  |  ElemList  COMMA  {printf (", ");}  Elem
 
 Elem        	:	ID {
                         printf ("%s", $1);
-                        if (ProcuraSimb ($1, escopocorrente) != NULL)
+                        if (ProcuraSimb ($1, escopocorrente) != NULL) {
                             DeclaracaoRepetida ($1);
+                        }
                         else{
 
                             simb = InsereSimb ($1, IDVAR, tipocorrente);
@@ -279,8 +280,26 @@ Module          :   ModHeader  ModBody {
                 }
                 ;
 
-ModHeader       :   Type ID OPPAR  CLPAR { InsereSimb($2, IDFUNC, tipocorrente); printf ("%s ()\n", $2); $$ = tipocorrente; SetarEscopo($2);}
-                |   Type ID OPPAR { InsereSimb($2, IDFUNC, tipocorrente); printf ("%s (", $2); $$ = tipocorrente; SetarEscopo($2);} ParamList  CLPAR {printf (")\n"); }
+ModHeader       :   Type ID OPPAR  CLPAR { 
+                        simb = ProcuraSimb ($2, "GLOBAL");
+                        if(simb != NULL) DeclaracaoRepetida ($2);
+                        else { InsereSimb($2, IDFUNC, tipocorrente); }
+                        
+                        printf ("%s ()\n", $2); 
+                        $$ = tipocorrente; 
+                        SetarEscopo($2);
+
+                        }
+                |   Type ID OPPAR { 
+                        simb = ProcuraSimb ($2, "GLOBAL");
+                        if(simb != NULL) DeclaracaoRepetida ($2);
+                        else { InsereSimb($2, IDFUNC, tipocorrente); }
+
+                        printf ("%s (", $2); 
+                        $$ = tipocorrente; 
+                        SetarEscopo($2);
+
+                        } ParamList  CLPAR {printf (")\n"); }
                 ;
 
 ParamList       :   Parameter
@@ -675,8 +694,9 @@ void InicTabSimb () {
 simbolo ProcuraSimb (char *cadeia, char *escopo) {
     simbolo s; int i;
     i = hash (cadeia);
-    for (s = tabsimb[i]; (s!=NULL) && strcmp(cadeia, s->cadeia) && strcmp(escopo, s->escopo);
+    for (s = tabsimb[i]; (s!=NULL) && ( strcmp(cadeia, s->cadeia)  || strcmp(escopo, s->escopo) );
         s = s->prox);
+    //if(s != NULL) printf("iguais: c1:%s c2:%s e1:%s e2:%s",cadeia, s->cadeia, escopo, s->escopo);
     return s;
 }
 
@@ -752,6 +772,7 @@ void DeclaracaoRepetida (char *s) {
     printf ("\n\n***** Declaracao Repetida: %s *****\n\n", s);
 }
 
+
 void NaoDeclarado (char *s) {
     printf ("\n\n***** Identificador Nao Declarado: %s *****\n\n", s);
 }
@@ -773,9 +794,9 @@ void VerificaInicRef () {
             for (s = tabsimb[i]; s!=NULL; s = s->prox)
                 if (s->tid == IDVAR) {
                     if (s->inic == FALSO)
-                        printf ("%s: Nao Inicializada\n", s->cadeia);
+                        printf ("%s(Escopo: %s): Nao Inicializada\n", s->cadeia, s->escopo);
                     if (s->ref == FALSO)
-                        printf ("%s: Nao Referenciada\n", s->cadeia);
+                        printf ("%s(Escopo: %s): Nao Referenciada\n", s->cadeia, s->escopo);
                 }
 }
 

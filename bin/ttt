@@ -2,12 +2,28 @@ AnaliseDeTexto {{{
 var {
 	char c;
 	logic fim;
+	int fim
+
+***** Declaracao Repetida: fim *****
+
+;
 }
 void ExibirTabela ()
 var {
-	logic fim
+	logic fim;
+}
+statements {
+}
+void 
 
-***** Declaracao Repetida: fim *****
+***** Declaracao Repetida: c *****
+
+c ()
+var {
+	logic abac;
+	int abac
+
+***** Declaracao Repetida: abac *****
 
 ;
 }
@@ -18,26 +34,30 @@ var {
 	int i;
 }
 statements {
+	c := i ;
 }
 }}}
 
-c: Nao Inicializada
-c: Nao Referenciada
-i: Nao Inicializada
-i: Nao Referenciada
-fim: Nao Inicializada
-fim: Nao Referenciada
+abac(Escopo: c): Nao Inicializada
+abac(Escopo: c): Nao Referenciada
+i(Escopo: MAIN): Nao Inicializada
+fim(Escopo: ExibirTabela): Nao Inicializada
+fim(Escopo: ExibirTabela): Nao Referenciada
+fim(Escopo: GLOBAL): Nao Inicializada
+fim(Escopo: GLOBAL): Nao Referenciada
 
 
    TABELA  DE  SIMBOLOS:
 
 Classe 0:
+  (abac, IDVAR, LOGICO, Escopo: c, 0, 0)
   (ExibirTabela, IDFUNC, FUNCVOID, Escopo: GLOBAL)
 Classe 7:
-  (c, IDVAR, CARACTERE, Escopo: GLOBAL, 0, 0)
+  (c, IDVAR, CARACTERE, Escopo: GLOBAL, 1, 1)
 Classe 13:
-  (i, IDVAR, INTEIRO, Escopo: MAIN, 0, 0)
+  (i, IDVAR, INTEIRO, Escopo: MAIN, 0, 1)
 Classe 17:
+  (fim, IDVAR, LOGICO, Escopo: ExibirTabela, 0, 0)
   (fim, IDVAR, LOGICO, Escopo: GLOBAL, 0, 0)
 Classe 22:
   (AnaliseDeTexto, IDPROG)
