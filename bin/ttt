@@ -1,0 +1,36 @@
+AnaliseDeTexto {{{
+char ExibirTabela ()
+var {
+	logic fim;
+}
+statements {
+	return ;
+}
+
+
+***** Incompatibilidade: Return indevido no escopo da funcao. *****
+
+main
+var {
+	int i;
+}
+statements {
+}
+}}}
+
+i: Nao Inicializada
+i: Nao Referenciada
+fim: Nao Inicializada
+fim: Nao Referenciada
+
+
+   TABELA  DE  SIMBOLOS:
+
+Classe 0:
+  (ExibirTabela, IDFUNC, CARACTERE)
+Classe 13:
+  (i, IDVAR, INTEIRO, 0, 0)
+Classe 17:
+  (fim, IDVAR, LOGICO, 0, 0)
+Classe 22:
+  (AnaliseDeTexto, IDPROG)

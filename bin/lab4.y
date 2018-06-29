@@ -108,58 +108,58 @@ void NaoEsperado (char *);
 %type       <returnedTypes> ModBody StatList CompStat Stats
 %type       <returnedType>  Statement ReturnStat ModHeader
 
-%token		<string> ID 			
-%token 		<string> CHARCT 		
-%token 		<string> STRING 		
-%token      <valor> INTCT       
-%token      <valreal> FLOATCT   
+%token		<string> ID
+%token 		<string> CHARCT
+%token 		<string> STRING
+%token      <valor> INTCT
+%token      <valreal> FLOATCT
 
-%token 		OR 			
-%token 		AND 		
-%token 		NOT 	
+%token 		OR
+%token 		AND
+%token 		NOT
 
-%token 		<atr> RELOP 		
-%token 		<atr> ADOP 		
+%token 		<atr> RELOP
+%token 		<atr> ADOP
 %token 		<atr> MULTOP
 
 %token      NEG
 
-%token 		OPPAR 		
-%token 		CLPAR 		
-%token 		OPBRAK 		
-%token 		CLBRAK		
-%token 		OPBRACE 	
-%token 		CLBRACE 	
-%token 		OPTRIP		
-%token 		CLTRIP 		
+%token 		OPPAR
+%token 		CLPAR
+%token 		OPBRAK
+%token 		CLBRAK
+%token 		OPBRACE
+%token 		CLBRACE
+%token 		OPTRIP
+%token 		CLTRIP
 
-%token 		COMMA 		
-%token      SCOLON      
-%token 		ASSIGN 		
-%token      CHAR    
-%token      DO      
-%token      ELSE    
-%token      FALSE   
-%token      FLOAT   
-%token      IF      
-%token      INT     
-%token      LOGIC       
-%token      READ        
-%token      STATEMENTS  
-%token      THEN        
-%token      TRUE        
-%token      VAR         
-%token      WHILE       
-%token      WRITE       
-%token      INVAL 
+%token 		COMMA
+%token      SCOLON
+%token 		ASSIGN
+%token      CHAR
+%token      DO
+%token      ELSE
+%token      FALSE
+%token      FLOAT
+%token      IF
+%token      INT
+%token      LOGIC
+%token      READ
+%token      STATEMENTS
+%token      THEN
+%token      TRUE
+%token      VAR
+%token      WHILE
+%token      WRITE
+%token      INVAL
 
-%token      VOID        
-%token      FOR     
-%token      CALL    
-%token      COLON       
-%token      MAIN        
-%token      REPEAT      
-%token      RETURN      
+%token      VOID
+%token      FOR
+%token      CALL
+%token      COLON
+%token      MAIN
+%token      REPEAT
+%token      RETURN
 
 
 %%
@@ -190,7 +190,7 @@ Type            :   INT  {printf ("int "); tipocorrente = INTEIRO;}
                 |   LOGIC  {printf ("logic "); tipocorrente = LOGICO;}
                 |   VOID  {printf ("void "); tipocorrente = FUNCVOID;}
                 ;
-                
+
 ElemList        :   Elem  |  ElemList  COMMA  {printf (", ");}  Elem
                 ;
 
@@ -217,7 +217,7 @@ DimList         :   INTCT   {
                             simb->ndims = 1;
                             simb->dims[1] = $1;
                         }
-                |   INTCT  COMMA  INTCT  { 
+                |   INTCT  COMMA  INTCT  {
                             printf ("%d , %d ", $1, $3);
                             if ($1 <= 0 || $3 <= 0) Esperado ("Valor inteiro positivo");
                             simb->ndims = 2;
@@ -279,7 +279,7 @@ ModHeader       :   Type ID OPPAR  CLPAR { InsereSimb($2, IDFUNC, tipocorrente);
                 |   Type ID OPPAR { InsereSimb($2, IDFUNC, tipocorrente); printf ("%s (", $2); $$ = tipocorrente; } ParamList  CLPAR {printf (")\n"); }
                 ;
 
-ParamList       :   Parameter  
+ParamList       :   Parameter
                 |   ParamList  COMMA {printf (", ");} Parameter
                 ;
 
@@ -292,7 +292,7 @@ ModBody         :   Decls  Stats {$$[0] = $2[0]; $$[1] = $2[1]; $$[2] = $2[2]; $
 
 MainMod         :   MAIN {printf("main\n");} ModBody
                 ;
-                
+
 Stats           :   STATEMENTS  {printf ("statements ");tab++;}  CompStat {tab--; $$[0] = $3[0]; $$[1] = $3[1]; $$[2] = $3[2]; $$[3] = $3[3]; $$[4] = $3[4];}
                 ;
 
@@ -304,7 +304,7 @@ StatList        :
                 |   StatList  Statement {if ($2 != -1) {$$[$2] = 1;}}
                 ;
 
-Statement       :   CompStat 
+Statement       :   CompStat
                 |   IfStat  {$$ = -1;}
                 |   WhileStat  {$$ = -1;}
                 |   RepeatStat  {$$ = -1;}
@@ -324,7 +324,7 @@ IfStat          :  {tabular ();} IF  {printf ("if ");} Expression {
                     }  THEN {printf ("then \n"); tab++;} Statement ElseStat
                 ;
 
-               
+
 ElseStat        :   { tab--;}
                 |   ELSE {tab--; tabular();printf ("else\n ");tab++;} Statement{} {tab--;}
                 ;
@@ -332,7 +332,7 @@ ElseStat        :   { tab--;}
 
 
 WhileStat       :   {tabular ();} WHILE  {printf ("while ");} Expression {
-                        if($4 != LOGICO){ 
+                        if($4 != LOGICO){
                             Esperado("Expressao logica no cabecalho do WHILE");
                         }
                     } DO {printf ("do \n");tab++;}  Statement {tab--;}
@@ -340,7 +340,7 @@ WhileStat       :   {tabular ();} WHILE  {printf ("while ");} Expression {
 
 
 RepeatStat      :   {tabular ();} REPEAT  {printf ("repeat \n");tab++;} Statement WHILE  {tab--;tabular();printf ("while ");} Expression{
-                        if($7 != LOGICO){ 
+                        if($7 != LOGICO){
                             Esperado("Expressao logica no enncerramento do REPEAT");
                         }
                     }  SCOLON {printf (";\n");}
@@ -349,37 +349,37 @@ RepeatStat      :   {tabular ();} REPEAT  {printf ("repeat \n");tab++;} Statemen
 ForStat         :   {tabular ();} FOR  {printf ("for ");} Variable {
                             if($4->array == VERDADE || ($4->tvar != CARACTERE && $4->tvar != INTEIRO)) {
                                 Esperado("Variavel de controle do FOR escalar inteira ou escalar caractere");
-                            } 
+                            }
                         } OPPAR  {printf ("( ");} AuxExpr4{
-                            if($8 != INTEIRO && $8 != CARACTERE){ 
+                            if($8 != INTEIRO && $8 != CARACTERE){
                                 Esperado("Primeira expressao do FOR inteira ou caractere");
                             }
                         }   COLON  {printf (": ");}
                     Expression{
-                            if($12 != LOGICO){ 
+                            if($12 != LOGICO){
                                 Esperado("Segunda expressao do FOR logica");
                             }
                         }  COLON {printf (": ");}   AuxExpr4{
-                        if($16 != INTEIRO && $16 != CARACTERE){ 
+                        if($16 != INTEIRO && $16 != CARACTERE){
                             Esperado("Terceira expressao do FOR inteira ou caractere");
                             }
                         }   CLPAR {printf (")\n"); tab++; }  Statement {tab--;}
                 ;
 
 ReadStat        :   READ {tabular(); printf ("read (");} OPPAR  ReadList  CLPAR  SCOLON {printf (");\n");}
-                ; 
+                ;
 
-ReadList        :   Variable  
+ReadList        :   Variable
                 |   ReadList  COMMA {printf (",");} Variable
                 ;
 
 WriteStat       :   WRITE  OPPAR  { tabular ();printf ("write ( ");} WriteList  CLPAR  SCOLON {printf (");\n");}
-                ;  
+                ;
 
 WriteList       :   WriteElem  |  WriteList  COMMA {printf (", ");} WriteElem
                 ;
 
-WriteElem       :   STRING {printf ("%s", $1);} |  Expression  
+WriteElem       :   STRING {printf ("%s", $1);} |  Expression
                 ;
 
 CallStat        :   CALL  ID  OPPAR {
@@ -390,16 +390,16 @@ CallStat        :   CALL  ID  OPPAR {
                         printf("call %s(",$2);
                     } Arguments  CLPAR  SCOLON {printf (");\n");}
                 ;
-                
+
 Arguments       :
                 |  ExprList
                 ;
 
-ReturnStat      :   RETURN {tabular();printf ("return ;\n"); $$ = 0;}  SCOLON
+ReturnStat      :   RETURN SCOLON {tabular();printf ("return ;\n"); $$ = 0;}
                 |   RETURN {tabular();printf ("return ");} Expression SCOLON {$$ = $3; printf (";\n");}
                 ;
 
-AssignStat      :   {tabular ();} Variable   
+AssignStat      :   {tabular ();} Variable
                     { if  ($2 != NULL) $2->inic = $2->ref = VERDADE;}
                     ASSIGN  {printf (":= ");}  Expression  SCOLON
                     {
@@ -414,25 +414,25 @@ AssignStat      :   {tabular ();} Variable
                 ;
 
 
-ExprList		:	Expression  
+ExprList		:	Expression
 				|	ExprList  COMMA {printf (", ");}  Expression
 				;
 
-Expression      :   AuxExpr1  
+Expression      :   AuxExpr1
                 |  Expression  OR  {printf ("|| ");}  AuxExpr1  {
                         if ($1 != LOGICO || $4 != LOGICO)
                             Incompatibilidade ("Operando improprio para operador or");
                         $$ = LOGICO;
                     }
                 ;
-AuxExpr1        :   AuxExpr2  
+AuxExpr1        :   AuxExpr2
                 |  AuxExpr1  AND  {printf ("&& ");}  AuxExpr2  {
                         if ($1 != LOGICO || $4 != LOGICO)
                             Incompatibilidade ("Operando improprio para operador and");
                         $$ = LOGICO;
                     }
                 ;
-AuxExpr2        :   AuxExpr3  
+AuxExpr2        :   AuxExpr3
                 |  NOT  {printf ("! ");}  AuxExpr3  {
                         if ($3 != LOGICO)
                             Incompatibilidade ("Operando improprio para operador not");
@@ -464,7 +464,7 @@ AuxExpr3        :   AuxExpr4
                         $$ = LOGICO;
                     }
                 ;
-                    
+
 AuxExpr4        :   Term
                 |   AuxExpr4  ADOP  {
                         switch ($2) {
@@ -564,8 +564,8 @@ Variable        :   ID  {
 Subscripts      :   {$$ = 0;}
                 |   OPBRAK  {printf ("[ ");}  SubscrList
                     CLBRAK  {printf ("] "); $$ = $3; }
-                ;                
-SubscrList      :   AuxExpr4 
+                ;
+SubscrList      :   AuxExpr4
                     {
                         $$ = 1;
                         if ($1 != INTEIRO && $1 != CARACTERE)
@@ -575,7 +575,7 @@ SubscrList      :   AuxExpr4
                 |   ThreeSubscr {$$ =3;}
                 ;
 
-TwoSubscr       :   AuxExpr4  COMMA  {printf (", ");}  AuxExpr4 { if ($1 != INTEIRO && $1 != CARACTERE || 
+TwoSubscr       :   AuxExpr4  COMMA  {printf (", ");}  AuxExpr4 { if ($1 != INTEIRO && $1 != CARACTERE ||
                                                                     $4 != INTEIRO && $4 != CARACTERE)
                                                                     Incompatibilidade ("Tipo inadequado para subscrito");   }
 
@@ -723,4 +723,3 @@ void Esperado (char *s) {
 void NaoEsperado (char *s) {
 printf ("\n\n***** Nao Esperado: %s *****\n\n", s);
 }
-
