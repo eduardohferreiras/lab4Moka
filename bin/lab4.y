@@ -466,17 +466,20 @@ WriteElem       :   STRING {printf ("%s", $1);} |  Expression
                 ;
 
 CallStat        :   CALL  ID  OPPAR {
-                        simb = ProcuraSimb ($2, "INDEF");
+                        simb = ProcuraSimb ($2, "GLO");
                         if (simb == NULL) NaoDeclarado ($2);
                         else if (simb->tid != IDFUNC)   TipoInadequado ($2);
                         else if (simb->tvar != FUNCVOID) TipoFuncaoInadequado ($2);
                         tabular();
                         printf("call %s(",$2);
-                    } Arguments  CLPAR  SCOLON {printf (");\n");}
+                    } Arguments  CLPAR  SCOLON {
+                        printf (");\n");
+                        simb = ProcuraSimb ()
+                    }
                 ;
 
 Arguments       :
-                |  ExprList
+                |  ExprList {$$ = $1;}
                 ;
 
 ReturnStat      :   RETURN SCOLON {tabular();printf ("return ;\n"); $$ = 0;}
@@ -498,8 +501,17 @@ AssignStat      :   {tabular ();} Variable
                 ;
 
 
-ExprList		:	Expression
-				|	ExprList  COMMA {printf (", ");}  Expression
+ExprList		:	Expression { $$->value = $1; $$->prox = NULL; }
+				|	ExprList  COMMA {printf (", ");}  Expression {
+                        $$ = $1;
+                        lista *p = $$;
+                        while (p->prox != NULL) {                            
+                            p = p->prox;
+                        }
+                        p->prox = (lista*) malloc (sizeof(lista));
+                        p->value = $4;
+                        p->prox->prox = NULL;
+                    }
 				;
 
 Expression      :   AuxExpr1
