@@ -1,0 +1,51 @@
+MenorMaior {{{
+var {
+int i , n , num , menor , maior ;
+}
+statements {
+read ( n , i , menor ) ;
+i := 1 ;
+while i <= n do
+{
+read ( num ) ;
+if i = 1 then
+{
+menor := num ;
+maior := num ;
+}
+else
+{
+if num > maior then
+maior := num ;
+if num < menor then
+menor := num ;
+}
+i := i + 1 ;
+}
+write ( "Maior = " , maior , "
+Menor = " , menor ) ;
+if i + 3 then
+i := i - 5 ;
+while i * 5 do
+i := i / 4 ;
+}
+}}}
+
+num: Nao Inicializada
+n: Nao Inicializada
+
+
+   TABELA  DE  SIMBOLOS:
+
+Classe 5:
+  (MenorMaior, IDPROG)
+Classe 7:
+  (maior, IDVAR, INTEIRO, 1, 1)
+Classe 13:
+  (i, IDVAR, INTEIRO, 1, 1)
+Classe 14:
+  (num, IDVAR, INTEIRO, 0, 1)
+Classe 16:
+  (menor, IDVAR, INTEIRO, 1, 1)
+Classe 18:
+  (n, IDVAR, INTEIRO, 0, 1)

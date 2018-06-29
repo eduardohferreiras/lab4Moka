@@ -1,0 +1,18 @@
+AnaliseDeTexto {{{
+
+char ExibirTabela ()
+var {
+	logic fim;
+}
+statements {
+	return;
+}
+
+main
+var {
+	int i;
+}
+statements {
+
+}
+}}} 
