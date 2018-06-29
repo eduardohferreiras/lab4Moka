@@ -24,6 +24,7 @@ var {
 }
 statements {
 	c := i;
+	call ExibirTabela(i,i,i,fim,c);
 }
 
 }}}

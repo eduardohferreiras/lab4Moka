@@ -99,6 +99,8 @@ void VerificaInicRef (void);
 void Incompatibilidade (char *);
 void Esperado (char *);
 void NaoEsperado (char *);
+void TipoErradoDeArgumentos();
+void QuantidadeErradaDeArgumentos();
 
 %}
 %union {
@@ -111,6 +113,7 @@ void NaoEsperado (char *);
     int nsubscr;
     int returnedTypes[5];
     int returnedType;
+    lista *paramQueSobe; 
 }
 
 %type       <simb>          Variable
@@ -118,8 +121,12 @@ void NaoEsperado (char *);
                             AuxExpr3   AuxExpr4   Term   Factor
 %type       <nsubscr>       Subscripts SubscrList
 
+
+
 %type       <returnedTypes> ModBody StatList CompStat Stats
 %type       <returnedType>  Statement ReturnStat ModHeader WhileStat IfStat RepeatStat ForStat  ElseStat
+
+%type       <paramQueSobe> Arguments ExprList
 
 %token		<string> ID
 %token 		<string> CHARCT
@@ -466,7 +473,7 @@ WriteElem       :   STRING {printf ("%s", $1);} |  Expression
                 ;
 
 CallStat        :   CALL  ID  OPPAR {
-                        simb = ProcuraSimb ($2, "GLO");
+                        simb = ProcuraSimb ($2, "GLOBAL");
                         if (simb == NULL) NaoDeclarado ($2);
                         else if (simb->tid != IDFUNC)   TipoInadequado ($2);
                         else if (simb->tvar != FUNCVOID) TipoFuncaoInadequado ($2);
@@ -474,7 +481,37 @@ CallStat        :   CALL  ID  OPPAR {
                         printf("call %s(",$2);
                     } Arguments  CLPAR  SCOLON {
                         printf (");\n");
-                        simb = ProcuraSimb ()
+                        simb = ProcuraSimb ($2, "GLOBAL");
+                        lista* aux = $5;
+                        int deuRuim = 0;
+                        int tamanhoDoSubido = 0;
+                        
+                        while (aux != NULL)
+                        {
+                            tamanhoDoSubido ++;
+                            aux = aux->prox;
+                        }
+
+                        if(tamanhoDoSubido != simb->param->tipo)
+                        {
+                            QuantidadeErradaDeArgumentos();
+                        }
+                        else
+                        {
+                            aux = $5;
+                            lista* aux2 = simb->param->prox; 
+                            int i = 0;
+                            for(; i < tamanhoDoSubido; i++)
+                            {
+                                if(aux->tipo != aux2->tipo)
+                                {
+                                    TipoErradoDeArgumentos ();
+                                }
+                                aux = aux->prox;
+                                aux2 = aux2->prox;
+                            }
+                        }
+                    
                     }
                 ;
 
@@ -501,7 +538,7 @@ AssignStat      :   {tabular ();} Variable
                 ;
 
 
-ExprList		:	Expression { $$->value = $1; $$->prox = NULL; }
+ExprList		:	Expression { $$->tipo = $1; $$->prox = NULL; }
 				|	ExprList  COMMA {printf (", ");}  Expression {
                         $$ = $1;
                         lista *p = $$;
@@ -509,7 +546,7 @@ ExprList		:	Expression { $$->value = $1; $$->prox = NULL; }
                             p = p->prox;
                         }
                         p->prox = (lista*) malloc (sizeof(lista));
-                        p->value = $4;
+                        p->tipo = $4;
                         p->prox->prox = NULL;
                     }
 				;
@@ -872,4 +909,12 @@ void Esperado (char *s) {
 
 void NaoEsperado (char *s) {
 printf ("\n\n***** Nao Esperado: %s *****\n\n", s);
+}
+
+void QuantidadeErradaDeArgumentos () {
+    printf("\n\n***** Quantidade errada de argumentos na chamada de função. *****\n\n");
+}
+
+void TipoErradoDeArgumentos () {
+    printf("\n\n***** Tipo errado de argumento na chamada de função. *****\n\n");
 }
