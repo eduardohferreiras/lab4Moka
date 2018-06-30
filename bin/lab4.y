@@ -727,7 +727,7 @@ ThreeSubscr     :       TwoSubscr  COMMA {printf (", ");} AuxExpr4 { if ($4 != I
                 ;
 
 FuncCall        :       ID  {
-                            simb = ProcuraSimb ($1, "INDEF");
+                            simb = ProcuraSimb ($1, "GLOBAL");
                             if (simb == NULL) NaoDeclarado ($1);
                             else if (simb->tid != IDFUNC)   TipoInadequado ($1);
                             else if (simb->tvar == FUNCVOID) TipoFuncaoInadequado ($1);

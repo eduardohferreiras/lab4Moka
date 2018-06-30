@@ -14,11 +14,12 @@ var {
 }
 statements {
 }
-void cAS ()
+int cAS (int a )
 var {
 	logic abac;
 }
 statements {
+	return a ;
 }
 main
 var {
@@ -37,11 +38,13 @@ statements {
 
 ***** Tipo errado de argumento na chamada de função (argumento numero 5): esperava-se INTEIRO ou CARACTERE *****
 
+	i := cAS (i );
 }
 }}}
 
 abac(Escopo: cAS): Nao Inicializada
 abac(Escopo: cAS): Nao Referenciada
+a(Escopo: cAS): Nao Inicializada
 a(Escopo: ExibirTabela): Nao Inicializada
 a(Escopo: ExibirTabela): Nao Referenciada
 b(Escopo: ExibirTabela): Nao Inicializada
@@ -52,7 +55,6 @@ d(Escopo: ExibirTabela): Nao Inicializada
 d(Escopo: ExibirTabela): Nao Referenciada
 e(Escopo: ExibirTabela): Nao Inicializada
 e(Escopo: ExibirTabela): Nao Referenciada
-i(Escopo: MAIN): Nao Inicializada
 fim(Escopo: ExibirTabela): Nao Inicializada
 fim(Escopo: ExibirTabela): Nao Referenciada
 fim(Escopo: GLOBAL): Nao Inicializada
@@ -64,6 +66,7 @@ Classe 0:
   (abac, IDVAR, LOGICO, Escopo: cAS, 0, 0)
   (ExibirTabela, IDFUNC, FUNCVOID, Escopo: GLOBAL, Quant de parametros: 5, Tipos dos paramentros: INTEIRO, INTEIRO, INTEIRO, LOGICO, CARACTERE)
 Classe 5:
+  (a, IDVAR, INTEIRO, Escopo: cAS, 0, 1)
   (a, IDVAR, INTEIRO, Escopo: ExibirTabela, 0, 0)
 Classe 6:
   (b, IDVAR, INTEIRO, Escopo: ExibirTabela, 0, 0)
@@ -75,9 +78,9 @@ Classe 8:
 Classe 9:
   (e, IDVAR, CARACTERE, Escopo: ExibirTabela, 0, 0)
 Classe 13:
-  (i, IDVAR, INTEIRO, Escopo: MAIN, 0, 1)
+  (i, IDVAR, INTEIRO, Escopo: MAIN, 1, 1)
 Classe 17:
-  (cAS, IDFUNC, FUNCVOID, Escopo: GLOBAL, Quant de parametros: 0)
+  (cAS, IDFUNC, INTEIRO, Escopo: GLOBAL, Quant de parametros: 1, Tipos dos paramentros: INTEIRO)
   (fim, IDVAR, LOGICO, Escopo: ExibirTabela, 0, 0)
   (fim, IDVAR, LOGICO, Escopo: GLOBAL, 0, 1)
 Classe 22:
