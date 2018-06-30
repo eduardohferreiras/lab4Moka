@@ -25,6 +25,8 @@ var {
 statements {
 	c := i;
 	call ExibirTabela(i,i,i,fim,c);
+	call ExibirTabela(i,i,i,fim);
+	call ExibirTabela(i,i,i,fim,fim);
 }
 
 }}}

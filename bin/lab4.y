@@ -503,10 +503,16 @@ CallStat        :   CALL  ID  OPPAR {
                             int i = 0;
                             for(; i < tamanhoDoSubido; i++)
                             {
-                                if(aux->tipo != aux2->tipo)
+                                if( (aux2->tipo == INTEIRO && (aux->tipo != INTEIRO && aux->tipo != CARACTERE))  ||
+                                    (aux2->tipo == CARACTERE && (aux->tipo != INTEIRO && aux->tipo != CARACTERE)) ||
+                                    (aux2->tipo == REAL && (aux->tipo != REAL && aux->tipo != INTEIRO && aux->tipo != CARACTERE)) ||
+                                    (aux2->tipo == LOGICO && (aux->tipo != LOGICO))
+
+                                )
                                 {
-                                    TipoErradoDeArgumentos ();
+                                    TipoErradoDeArgumentos (aux2->tipo, i + 1);
                                 }
+
                                 aux = aux->prox;
                                 aux2 = aux2->prox;
                             }
@@ -546,7 +552,7 @@ ExprList		:	Expression { $$ = (lista*) malloc (sizeof(lista)); $$->tipo = $1; $$
                             p = p->prox;
                         }
                         p->prox = (lista*) malloc (sizeof(lista));
-                        p->tipo = $4;
+                        p->prox->tipo = $4;
                         p->prox->prox = NULL;
                     }
 				;
@@ -915,6 +921,20 @@ void QuantidadeErradaDeArgumentos () {
     printf("\n\n***** Quantidade errada de argumentos na chamada de função. *****\n\n");
 }
 
-void TipoErradoDeArgumentos () {
-    printf("\n\n***** Tipo errado de argumento na chamada de função. *****\n\n");
+void TipoErradoDeArgumentos (int tipoEsperado, int arg) {
+    
+    if (tipoEsperado == CARACTERE){
+        printf("\n\n***** Tipo errado de argumento na chamada de função (argumento numero %d): esperava-se INTEIRO ou CARACTERE *****\n\n", arg);
+    }
+    else if (tipoEsperado == REAL){
+        printf("\n\n***** Tipo errado de argumento na chamada de função (argumento numero %d): esperava-se INTEIRO, REAL OU CARACTERE *****\n\n", arg);
+
+    }
+    else if (tipoEsperado == INTEIRO){
+        printf("\n\n***** Tipo errado de argumento na chamada de função (argumento numero %d): esperava-se INTEIRO ou CARACTERE *****\n\n", arg);
+    }
+    else if (tipoEsperado == LOGICO){
+        printf("\n\n***** Tipo errado de argumento na chamada de função (argumento numero %d): esperava-se LOGICO *****\n\n", arg);
+
+    }
 }

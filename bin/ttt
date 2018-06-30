@@ -1,0 +1,84 @@
+AnaliseDeTexto {{{
+var {
+	char c;
+	logic fim;
+	int fim
+
+***** Declaracao Repetida: fim *****
+
+;
+}
+void ExibirTabela (int a , int b , int c , logic d , char e )
+var {
+	logic fim;
+}
+statements {
+}
+void cAS ()
+var {
+	logic abac;
+}
+statements {
+}
+main
+var {
+	int i;
+}
+statements {
+	c := i ;
+	call ExibirTabela(i , i , i , fim , c );
+	call ExibirTabela(i , i , i , fim );
+
+
+***** Quantidade errada de argumentos na chamada de função. *****
+
+	call ExibirTabela(i , i , i , fim , fim );
+
+
+***** Tipo errado de argumento na chamada de função (argumento numero 5): esperava-se INTEIRO ou CARACTERE *****
+
+}
+}}}
+
+abac(Escopo: cAS): Nao Inicializada
+abac(Escopo: cAS): Nao Referenciada
+a(Escopo: ExibirTabela): Nao Inicializada
+a(Escopo: ExibirTabela): Nao Referenciada
+b(Escopo: ExibirTabela): Nao Inicializada
+b(Escopo: ExibirTabela): Nao Referenciada
+c(Escopo: ExibirTabela): Nao Inicializada
+c(Escopo: ExibirTabela): Nao Referenciada
+d(Escopo: ExibirTabela): Nao Inicializada
+d(Escopo: ExibirTabela): Nao Referenciada
+e(Escopo: ExibirTabela): Nao Inicializada
+e(Escopo: ExibirTabela): Nao Referenciada
+i(Escopo: MAIN): Nao Inicializada
+fim(Escopo: ExibirTabela): Nao Inicializada
+fim(Escopo: ExibirTabela): Nao Referenciada
+fim(Escopo: GLOBAL): Nao Inicializada
+
+
+   TABELA  DE  SIMBOLOS:
+
+Classe 0:
+  (abac, IDVAR, LOGICO, Escopo: cAS, 0, 0)
+  (ExibirTabela, IDFUNC, FUNCVOID, Escopo: GLOBAL, Quant de parametros: 5, Tipos dos paramentros: INTEIRO, INTEIRO, INTEIRO, LOGICO, CARACTERE)
+Classe 5:
+  (a, IDVAR, INTEIRO, Escopo: ExibirTabela, 0, 0)
+Classe 6:
+  (b, IDVAR, INTEIRO, Escopo: ExibirTabela, 0, 0)
+Classe 7:
+  (c, IDVAR, INTEIRO, Escopo: ExibirTabela, 0, 0)
+  (c, IDVAR, CARACTERE, Escopo: GLOBAL, 1, 1)
+Classe 8:
+  (d, IDVAR, LOGICO, Escopo: ExibirTabela, 0, 0)
+Classe 9:
+  (e, IDVAR, CARACTERE, Escopo: ExibirTabela, 0, 0)
+Classe 13:
+  (i, IDVAR, INTEIRO, Escopo: MAIN, 0, 1)
+Classe 17:
+  (cAS, IDFUNC, FUNCVOID, Escopo: GLOBAL, Quant de parametros: 0)
+  (fim, IDVAR, LOGICO, Escopo: ExibirTabela, 0, 0)
+  (fim, IDVAR, LOGICO, Escopo: GLOBAL, 0, 1)
+Classe 22:
+  (AnaliseDeTexto, IDPROG)
