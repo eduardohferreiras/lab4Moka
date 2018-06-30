@@ -732,7 +732,35 @@ FuncCall        :       ID  {
                             else if (simb->tid != IDFUNC)   TipoInadequado ($1);
                             else if (simb->tvar == FUNCVOID) TipoFuncaoInadequado ($1);
                             printf ("%s ", $1);}
-                        OPPAR {printf ("(");} Arguments  CLPAR {printf (")");}
+                        OPPAR {printf ("(");} Arguments  CLPAR {
+                          printf (")");
+                          simb = ProcuraSimb($1, "GLOBAL");
+                          lista *aux = $5;
+                          int deuRuim = 0;
+                          int tamanhoDoSubido = 0;
+
+                          while (aux != NULL) {
+                            tamanhoDoSubido++;
+                            aux = aux->prox;
+                          }
+                          if(tamanhoDoSubido != simb->param->tipo) {
+                            QuantidadeErradaDeArgumentos();
+                          } else {
+                            aux = $5;
+                            lista *queroMorrer = simb->param->prox;
+                            int i=0;
+                            for(; i<tamanhoDoSubido; i++) {
+                              if ((queroMorrer->tipo == INTEIRO && (aux->tipo != INTEIRO && aux->tipo != CARACTERE))  ||
+                                  (queroMorrer->tipo == CARACTERE && (aux->tipo != INTEIRO && aux->tipo != CARACTERE)) ||
+                                  (queroMorrer->tipo == REAL && (aux->tipo != REAL && aux->tipo != INTEIRO && aux->tipo != CARACTERE)) ||
+                                  (queroMorrer->tipo == LOGICO && (aux->tipo != LOGICO))) {
+                                TipoErradoDeArgumentos(queroMorrer->tipo, i+1);
+                              }
+                              aux = aux->prox;
+                              queroMorrer = queroMorrer->prox;
+                            }
+                          }
+                        }
                 ;
 
 %%
@@ -922,7 +950,7 @@ void QuantidadeErradaDeArgumentos () {
 }
 
 void TipoErradoDeArgumentos (int tipoEsperado, int arg) {
-    
+
     if (tipoEsperado == CARACTERE){
         printf("\n\n***** Tipo errado de argumento na chamada de função (argumento numero %d): esperava-se INTEIRO ou CARACTERE *****\n\n", arg);
     }

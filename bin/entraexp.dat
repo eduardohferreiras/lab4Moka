@@ -11,11 +11,12 @@ var {
 statements {
 }
 
-void cAS ()
+int cAS ( int a )
 var {
 	logic abac;
 }
 statements {
+  return a;
 }
 
 main
@@ -27,6 +28,8 @@ statements {
 	call ExibirTabela(i,i,i,fim,c);
 	call ExibirTabela(i,i,i,fim);
 	call ExibirTabela(i,i,i,fim,fim);
+
+  i := cAS( i  );
 }
 
 }}}
