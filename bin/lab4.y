@@ -101,6 +101,7 @@ void Esperado (char *);
 void NaoEsperado (char *);
 void TipoErradoDeArgumentos();
 void QuantidadeErradaDeArgumentos();
+void RecursividadeNaoAdimitida();
 
 %}
 %union {
@@ -118,7 +119,7 @@ void QuantidadeErradaDeArgumentos();
 
 %type       <simb>          Variable
 %type       <tipoexpr>      Expression  AuxExpr1  AuxExpr2
-                            AuxExpr3   AuxExpr4   Term   Factor
+                            AuxExpr3   AuxExpr4   Term   Factor FuncCall
 %type       <nsubscr>       Subscripts SubscrList
 
 
@@ -473,12 +474,14 @@ WriteElem       :   STRING {printf ("%s", $1);} |  Expression
                 ;
 
 CallStat        :   CALL  ID  OPPAR {
+                        tabular();
+                        printf("call %s(",$2);
                         simb = ProcuraSimb ($2, "GLOBAL");
                         if (simb == NULL) NaoDeclarado ($2);
                         else if (simb->tid != IDFUNC)   TipoInadequado ($2);
-                        else if (simb->tvar != FUNCVOID) TipoFuncaoInadequado ($2);
-                        tabular();
-                        printf("call %s(",$2);
+                        else if (simb->tvar != FUNCVOID){
+                            TipoFuncaoInadequado ($2);
+                        } 
                     } Arguments  CLPAR  SCOLON {
                         printf (");\n");
                         simb = ProcuraSimb ($2, "GLOBAL");
@@ -678,7 +681,9 @@ Factor          :   Variable  {
                     }
                 |   OPPAR  {printf ("( ");}  Expression
                     CLPAR  {printf (") "); $$ = $3;}
-                |   FuncCall
+                |   FuncCall {
+                            $$ = $1;
+                    }
                 ;
 
 Variable        :   ID  {
@@ -731,36 +736,48 @@ FuncCall        :       ID  {
                             if (simb == NULL) NaoDeclarado ($1);
                             else if (simb->tid != IDFUNC)   TipoInadequado ($1);
                             else if (simb->tvar == FUNCVOID) TipoFuncaoInadequado ($1);
-                            printf ("%s ", $1);}
-                        OPPAR {printf ("(");} Arguments  CLPAR {
-                          printf (")");
-                          simb = ProcuraSimb($1, "GLOBAL");
-                          lista *aux = $5;
-                          int deuRuim = 0;
-                          int tamanhoDoSubido = 0;
-
-                          while (aux != NULL) {
-                            tamanhoDoSubido++;
-                            aux = aux->prox;
-                          }
-                          if(tamanhoDoSubido != simb->param->tipo) {
-                            QuantidadeErradaDeArgumentos();
-                          } else {
-                            aux = $5;
-                            lista *queroMorrer = simb->param->prox;
-                            int i=0;
-                            for(; i<tamanhoDoSubido; i++) {
-                              if ((queroMorrer->tipo == INTEIRO && (aux->tipo != INTEIRO && aux->tipo != CARACTERE))  ||
-                                  (queroMorrer->tipo == CARACTERE && (aux->tipo != INTEIRO && aux->tipo != CARACTERE)) ||
-                                  (queroMorrer->tipo == REAL && (aux->tipo != REAL && aux->tipo != INTEIRO && aux->tipo != CARACTERE)) ||
-                                  (queroMorrer->tipo == LOGICO && (aux->tipo != LOGICO))) {
-                                TipoErradoDeArgumentos(queroMorrer->tipo, i+1);
-                              }
-                              aux = aux->prox;
-                              queroMorrer = queroMorrer->prox;
+                            else if ( strcmp(simb->cadeia, escopocorrente) == 0) RecursividadeNaoAdimitida();
+                            else{
+                                $$ = simb->tvar;
                             }
-                          }
+                            printf ("%s ", $1);}
+                        OPPAR {printf ("(");} Arguments  CLPAR 
+                        {
+                        printf (")");
+                        simb = ProcuraSimb($1, "GLOBAL");
+                        if (simb == NULL) NaoDeclarado ($1);
+                        else if (simb->tid != IDFUNC)  {}
+                        else if (simb->tvar == FUNCVOID) {}
+                        else if ( strcmp(simb->cadeia, escopocorrente) == 0) {}
+                        else{
+                            lista *aux = $5;
+                            int deuRuim = 0;
+                            int tamanhoDoSubido = 0;
+
+                            while (aux != NULL) {
+                                tamanhoDoSubido++;
+                                aux = aux->prox;
+                            }
+                            if(tamanhoDoSubido != simb->param->tipo) {
+                                QuantidadeErradaDeArgumentos();
+                            } 
+                            else {
+                                aux = $5;
+                                lista *queroMorrer = simb->param->prox;
+                                int i=0;
+                                for(; i<tamanhoDoSubido; i++) {
+                                    if ((queroMorrer->tipo == INTEIRO && (aux->tipo != INTEIRO && aux->tipo != CARACTERE))  ||
+                                        (queroMorrer->tipo == CARACTERE && (aux->tipo != INTEIRO && aux->tipo != CARACTERE)) ||
+                                        (queroMorrer->tipo == REAL && (aux->tipo != REAL && aux->tipo != INTEIRO && aux->tipo != CARACTERE)) ||
+                                        (queroMorrer->tipo == LOGICO && (aux->tipo != LOGICO))) {
+                                        TipoErradoDeArgumentos(queroMorrer->tipo, i+1);
+                                    }
+                                    aux = aux->prox;
+                                    queroMorrer = queroMorrer->prox;
+                                }
+                            }
                         }
+                    }
                 ;
 
 %%
@@ -781,7 +798,7 @@ void InicTabSimb () {
 }
 
 /*
-    ProcuraSimb (cadeia, escopo): Procura cadeia na tabela de simbolos;
+    ProcuraSimb (cadeia, escopo): Procura cadeia na tabela de simbolos, em um dado escopo;
     Caso ela ali esteja, retorna um ponteiro para sua celula;
     Caso contrario, retorna NULL.
  */
@@ -795,11 +812,6 @@ simbolo ProcuraSimb (char *cadeia, char *escopo) {
     return s;
 }
 
-void SetarEscopo (char *escopo) {
-    escopocorrente = (char*) malloc ((strlen(escopo)+1)*sizeof(char));
-    strcpy(escopocorrente, escopo);
-
-}
 
 /*
     InsereSimb (cadeia, tid, tvar): Insere cadeia na tabela de
@@ -827,6 +839,11 @@ simbolo InsereSimb (char *cadeia, int tid, int tvar) {
     }
 
     s->prox = aux;  return s;
+}
+
+void SetarEscopo (char *escopo) {
+    escopocorrente = (char*) malloc ((strlen(escopo)+1)*sizeof(char));
+    strcpy(escopocorrente, escopo);
 }
 
 /*
@@ -947,6 +964,10 @@ printf ("\n\n***** Nao Esperado: %s *****\n\n", s);
 
 void QuantidadeErradaDeArgumentos () {
     printf("\n\n***** Quantidade errada de argumentos na chamada de função. *****\n\n");
+}
+
+void RecursividadeNaoAdimitida() {
+    printf("\n\n***** A linguagem não admite recursividade. *****\n\n");
 }
 
 void TipoErradoDeArgumentos (int tipoEsperado, int arg) {

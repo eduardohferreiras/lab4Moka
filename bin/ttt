@@ -1,24 +1,28 @@
 AnaliseDeTexto {{{
 var {
-	char c;
+	char c[ 6 ] ;
+	int f[ 6 ] ;
 	logic fim;
-	int fim
-
-***** Declaracao Repetida: fim *****
-
-;
+	int final;
 }
 void ExibirTabela (int a , int b , int c , logic d , char e )
 var {
 	logic fim;
 }
 statements {
+	a := 2 ;
+	b := c ;
 }
 int cAS (int a )
 var {
 	logic abac;
 }
 statements {
+	final := 
+
+***** A linguagem não admite recursividade. *****
+
+cAS (final );
 	return a ;
 }
 main
@@ -26,8 +30,47 @@ var {
 	int i;
 }
 statements {
-	c := i ;
-	call ExibirTabela(i , i , i , fim , c );
+	c [ 2 ] := i ;
+	c 
+
+***** Esperado: Subscrito(s) *****
+
+:= f 
+
+***** Esperado: Subscrito(s) *****
+
+;
+	i := 
+
+***** Identificador de Tipo Inadequado: c *****
+
+c (2 );
+	call cAS(
+
+***** Tipo de Funcao do Identificador Inadequado: cAS *****
+
+i );
+	i := 
+
+***** Tipo de Funcao do Identificador Inadequado: ExibirTabela *****
+
+ExibirTabela (c [ 3 ] , i , i , fim , c [ 1 ] );
+	read (c 
+
+***** Esperado: Subscrito(s) *****
+
+);
+	write ( f 
+
+***** Esperado: Subscrito(s) *****
+
+);
+	call ExibirTabela(c [ 3 ] , i , i , fim , c [ 1 ] );
+	call ExibirTabela(cAS (final ), i , i , fim , c [ 2 ] );
+
+
+***** Tipo errado de argumento na chamada de função (argumento numero 1): esperava-se INTEIRO ou CARACTERE *****
+
 	call ExibirTabela(i , i , i , fim );
 
 
@@ -45,16 +88,12 @@ statements {
 abac(Escopo: cAS): Nao Inicializada
 abac(Escopo: cAS): Nao Referenciada
 a(Escopo: cAS): Nao Inicializada
-a(Escopo: ExibirTabela): Nao Inicializada
-a(Escopo: ExibirTabela): Nao Referenciada
-b(Escopo: ExibirTabela): Nao Inicializada
-b(Escopo: ExibirTabela): Nao Referenciada
 c(Escopo: ExibirTabela): Nao Inicializada
-c(Escopo: ExibirTabela): Nao Referenciada
 d(Escopo: ExibirTabela): Nao Inicializada
 d(Escopo: ExibirTabela): Nao Referenciada
 e(Escopo: ExibirTabela): Nao Inicializada
 e(Escopo: ExibirTabela): Nao Referenciada
+f(Escopo: GLOBAL): Nao Inicializada
 fim(Escopo: ExibirTabela): Nao Inicializada
 fim(Escopo: ExibirTabela): Nao Referenciada
 fim(Escopo: GLOBAL): Nao Inicializada
@@ -67,18 +106,24 @@ Classe 0:
   (ExibirTabela, IDFUNC, FUNCVOID, Escopo: GLOBAL, Quant de parametros: 5, Tipos dos paramentros: INTEIRO, INTEIRO, INTEIRO, LOGICO, CARACTERE)
 Classe 5:
   (a, IDVAR, INTEIRO, Escopo: cAS, 0, 1)
-  (a, IDVAR, INTEIRO, Escopo: ExibirTabela, 0, 0)
+  (a, IDVAR, INTEIRO, Escopo: ExibirTabela, 1, 1)
 Classe 6:
-  (b, IDVAR, INTEIRO, Escopo: ExibirTabela, 0, 0)
+  (b, IDVAR, INTEIRO, Escopo: ExibirTabela, 1, 1)
 Classe 7:
-  (c, IDVAR, INTEIRO, Escopo: ExibirTabela, 0, 0)
-  (c, IDVAR, CARACTERE, Escopo: GLOBAL, 1, 1)
+  (c, IDVAR, INTEIRO, Escopo: ExibirTabela, 0, 1)
+  (c, IDVAR, CARACTERE, Escopo: GLOBAL, 1, 1, EH ARRAY
+	ndims = 1, dimensoes:  6)
 Classe 8:
   (d, IDVAR, LOGICO, Escopo: ExibirTabela, 0, 0)
 Classe 9:
   (e, IDVAR, CARACTERE, Escopo: ExibirTabela, 0, 0)
+Classe 10:
+  (f, IDVAR, INTEIRO, Escopo: GLOBAL, 0, 1, EH ARRAY
+	ndims = 1, dimensoes:  6)
 Classe 13:
   (i, IDVAR, INTEIRO, Escopo: MAIN, 1, 1)
+Classe 16:
+  (final, IDVAR, INTEIRO, Escopo: GLOBAL, 1, 1)
 Classe 17:
   (cAS, IDFUNC, INTEIRO, Escopo: GLOBAL, Quant de parametros: 1, Tipos dos paramentros: INTEIRO)
   (fim, IDVAR, LOGICO, Escopo: ExibirTabela, 0, 0)
