@@ -1,132 +1,223 @@
 AnaliseDeTexto {{{
 var {
-	char c[ 6 ] ;
-	int f[ 6 ] ;
+	char nomes[ 50 , 10 ] , palavra[ 10 ] ;
+	int ntab, nocorr[ 50 ] ;
+	char c;
 	logic fim;
-	int final;
 }
-void ExibirTabela (int a , int b , int c , logic d , char e )
+int Procura ()
 var {
+	int i, inf, sup, med, posic, compara;
+	logic achou, fimteste;
+}
+statements {
+	achou := false ;
+	inf := 1 ;
+	sup := ntab ;
+	while ! achou && sup >= inf do 
+	{
+		med := ( inf + sup ) / 2 ;
+		compara := 0 ;
+		fimteste := false ;
+		for i ( 0 : ! fimteste && compara = 0 : i + 1 )
+		{
+			if palavra [ i ] < nomes [ med , i ] then 
+				compara := ~ 1 ;
+			else
+ 				if palavra [ i ] > nomes [ med , i ] then 
+					compara := 1 ;
+			if palavra [ i ] = '§' || nomes [ med , i ] = '@' then 
+				fimteste := true ;
+		}
+		if compara = 0 then 
+			achou := true ;
+		else
+ 			if compara < 0 then 
+				sup := med - 1 ;
+			else
+ 				inf := med + 1 ;
+	}
+	if achou then 
+		posic := med ;
+	else
+ 		posic := ~ inf ;
+	return posic ;
+}
+void Inserir (int posic )
+var {
+	int i, j;
 	logic fim;
 }
 statements {
-	a := 2 ;
-	b := c ;
+	ntab := ntab + 1 ;
+	for i ( ntab : i >= posic + 1 : i - 1 )
+	{
+		fim := false ;
+		for j ( 0 : ! fim : j + 1 )
+		{
+			nomes [ i , j ] := nomes [ i - 1 , j ] ;
+			if nomes [ i , j ] = '' then 
+				fim := true ;
+		}
+		nocorr [ i ] := nocorr [ i - 1 ] ;
+	}
+	fim := false ;
+	for j ( 0 : ! fim : j + 1 )
+	{
+		nomes [ posic , j ] := palavra [ j ] ;
+		if palavra [ j ] = 'ú' then 
+			fim := true ;
+	}
+	nocorr [ posic ] := 1 ;
 }
-int cAS (int a )
+void ExibirTabela ()
 var {
-	logic abac;
+	int i;
+	logic fim;
 }
 statements {
-	final := 
+	write ( "          ", "Palavra             ", "   Num. de ocorr.");
+	for i ( 1 : i <= 50 : i + 1 )
+		write ( "-");
+	for i ( 1 : i <= ntab : i + 1 )
+	{
+		write ( "\n          ");
+		fim := false ;
+		for j 
 
-***** A linguagem n√£o admite recursividade. *****
+***** Identificador Nao Declarado: j *****
 
-cAS (final );
-	return a ;
+
+
+***** Identificador Nao Declarado: Variavel de controle do For *****
+
+( 0 : ! fim : j 
+
+***** Identificador Nao Declarado: j *****
+
++ 1 
+
+***** Incompatibilidade: Operando improprio para operador aritmetico *****
+
+)
+		{
+			if nomes [ i , j 
+
+***** Identificador Nao Declarado: j *****
+
+
+
+***** Incompatibilidade: Tipo inadequado para subscrito *****
+
+] = '' then 
+				fim := true ;
+			else
+ 				write ( nomes [ i , j 
+
+***** Identificador Nao Declarado: j *****
+
+
+
+***** Incompatibilidade: Tipo inadequado para subscrito *****
+
+] );
+		}
+		write ( " | ", nocorr [ i ] );
+	}
 }
 main
 var {
-	int i;
+	int i, posic;
+	char c;
+	logic fim;
 }
 statements {
-	c [ 2 ] := i ;
-	c 
-
-***** Esperado: Subscrito(s) *****
-
-:= f 
-
-***** Esperado: Subscrito(s) *****
-
-;
-	i := 
-
-***** Identificador de Tipo Inadequado: c *****
-
-c (2 );
-	call cAS(
-
-***** Tipo de Funcao do Identificador Inadequado: cAS *****
-
-i );
-	i := 
-
-***** Tipo de Funcao do Identificador Inadequado: ExibirTabela *****
-
-ExibirTabela (c [ 3 ] , i , i , fim , c [ 1 ] );
-	read (c 
-
-***** Esperado: Subscrito(s) *****
-
-);
-	write ( f 
-
-***** Esperado: Subscrito(s) *****
-
-);
-	call ExibirTabela(c [ 3 ] , i , i , fim , c [ 1 ] );
-	call ExibirTabela(cAS (final ), i , i , fim , c [ 2 ] );
-
-
-***** Tipo errado de argumento na chamada de fun√ß√£o (argumento numero 1): esperava-se INTEIRO ou CARACTERE *****
-
-	call ExibirTabela(i , i , i , fim );
+	ntab := 0 ;
+	write ( "Nova palavra? (s/n): ");
+	read (c );
+	while c = 'X' || c = 'Ù' do 
+	{
+		write ( "\nDigite a palavra: ");
+		fim := false ;
+		for i ( 0 : ! fim : i + 1 )
+		{
+			read (palavra [ i ] );
+			if palavra [ i ] = 'ÿ' then 
+			{
+				fim := true ;
+				palavra [ i ] := '¨' ;
+			}
+		}
+		posic := Procura ();
+		if posic > 0 then 
+			nocorr [ posic ] := nocorr [ posic ] + 1 ;
+		else
+ 			call Inserir(~ posic , i );
 
 
 ***** Quantidade errada de argumentos na chamada de fun√ß√£o. *****
 
-	call ExibirTabela(i , i , i , fim , fim );
-
-
-***** Tipo errado de argumento na chamada de fun√ß√£o (argumento numero 5): esperava-se INTEIRO ou CARACTERE *****
-
-	i := cAS (i );
+		write ( "\n\nNova palavra? (s/n): ");
+		read (c );
+	}
+	call ExibirTabela();
 }
 }}}
 
-abac(Escopo: cAS): Nao Inicializada
-abac(Escopo: cAS): Nao Referenciada
-a(Escopo: cAS): Nao Inicializada
-c(Escopo: ExibirTabela): Nao Inicializada
-d(Escopo: ExibirTabela): Nao Inicializada
-d(Escopo: ExibirTabela): Nao Referenciada
-e(Escopo: ExibirTabela): Nao Inicializada
-e(Escopo: ExibirTabela): Nao Referenciada
-f(Escopo: GLOBAL): Nao Inicializada
-fim(Escopo: ExibirTabela): Nao Inicializada
-fim(Escopo: ExibirTabela): Nao Referenciada
+c(Escopo: MAIN): Nao Inicializada
+c(Escopo: GLOBAL): Nao Inicializada
+c(Escopo: GLOBAL): Nao Referenciada
+i(Escopo: MAIN): Nao Inicializada
+i(Escopo: ExibirTabela): Nao Inicializada
+i(Escopo: Inserir): Nao Inicializada
+posic(Escopo: Inserir): Nao Inicializada
+i(Escopo: Procura): Nao Inicializada
+j(Escopo: Inserir): Nao Inicializada
 fim(Escopo: GLOBAL): Nao Inicializada
+fim(Escopo: GLOBAL): Nao Referenciada
 
 
    TABELA  DE  SIMBOLOS:
 
 Classe 0:
-  (abac, IDVAR, LOGICO, Escopo: cAS, 0, 0)
-  (ExibirTabela, IDFUNC, FUNCVOID, Escopo: GLOBAL, Quant de parametros: 5, Tipos dos paramentros: INTEIRO, INTEIRO, INTEIRO, LOGICO, CARACTERE)
-Classe 5:
-  (a, IDVAR, INTEIRO, Escopo: cAS, 0, 1)
-  (a, IDVAR, INTEIRO, Escopo: ExibirTabela, 1, 1)
-Classe 6:
-  (b, IDVAR, INTEIRO, Escopo: ExibirTabela, 1, 1)
+  (ExibirTabela, IDFUNC, FUNCVOID, Escopo: GLOBAL, Quant de parametros: 0)
+Classe 3:
+  (compara, IDVAR, INTEIRO, Escopo: Procura, 1, 1)
 Classe 7:
-  (c, IDVAR, INTEIRO, Escopo: ExibirTabela, 0, 1)
-  (c, IDVAR, CARACTERE, Escopo: GLOBAL, 1, 1, EH ARRAY
-	ndims = 1, dimensoes:  6)
-Classe 8:
-  (d, IDVAR, LOGICO, Escopo: ExibirTabela, 0, 0)
-Classe 9:
-  (e, IDVAR, CARACTERE, Escopo: ExibirTabela, 0, 0)
-Classe 10:
-  (f, IDVAR, INTEIRO, Escopo: GLOBAL, 0, 1, EH ARRAY
-	ndims = 1, dimensoes:  6)
+  (c, IDVAR, CARACTERE, Escopo: MAIN, 0, 1)
+  (c, IDVAR, CARACTERE, Escopo: GLOBAL, 0, 0)
+  (ntab, IDVAR, INTEIRO, Escopo: GLOBAL, 1, 1)
+  (palavra, IDVAR, CARACTERE, Escopo: GLOBAL, 1, 1, EH ARRAY
+	ndims = 1, dimensoes:  10)
+Classe 11:
+  (med, IDVAR, INTEIRO, Escopo: Procura, 1, 1)
 Classe 13:
-  (i, IDVAR, INTEIRO, Escopo: MAIN, 1, 1)
-Classe 16:
-  (final, IDVAR, INTEIRO, Escopo: GLOBAL, 1, 1)
+  (posic, IDVAR, INTEIRO, Escopo: MAIN, 1, 1)
+  (i, IDVAR, INTEIRO, Escopo: MAIN, 0, 1)
+  (i, IDVAR, INTEIRO, Escopo: ExibirTabela, 0, 1)
+  (i, IDVAR, INTEIRO, Escopo: Inserir, 0, 1)
+  (posic, IDVAR, INTEIRO, Escopo: Inserir, 0, 1)
+  (posic, IDVAR, INTEIRO, Escopo: Procura, 1, 1)
+  (i, IDVAR, INTEIRO, Escopo: Procura, 0, 1)
+Classe 14:
+  (j, IDVAR, INTEIRO, Escopo: Inserir, 0, 1)
+  (fimteste, IDVAR, LOGICO, Escopo: Procura, 1, 1)
+Classe 15:
+  (nocorr, IDVAR, INTEIRO, Escopo: GLOBAL, 1, 1, EH ARRAY
+	ndims = 1, dimensoes:  50)
 Classe 17:
-  (cAS, IDFUNC, INTEIRO, Escopo: GLOBAL, Quant de parametros: 1, Tipos dos paramentros: INTEIRO)
-  (fim, IDVAR, LOGICO, Escopo: ExibirTabela, 0, 0)
-  (fim, IDVAR, LOGICO, Escopo: GLOBAL, 0, 1)
+  (fim, IDVAR, LOGICO, Escopo: MAIN, 1, 1)
+  (fim, IDVAR, LOGICO, Escopo: ExibirTabela, 1, 1)
+  (fim, IDVAR, LOGICO, Escopo: Inserir, 1, 1)
+  (fim, IDVAR, LOGICO, Escopo: GLOBAL, 0, 0)
+  (nomes, IDVAR, CARACTERE, Escopo: GLOBAL, 1, 1, EH ARRAY
+	ndims = 2, dimensoes:  50  10)
+Classe 18:
+  (inf, IDVAR, INTEIRO, Escopo: Procura, 1, 1)
+Classe 19:
+  (Inserir, IDFUNC, FUNCVOID, Escopo: GLOBAL, Quant de parametros: 1, Tipos dos paramentros: INTEIRO)
+  (Procura, IDFUNC, INTEIRO, Escopo: GLOBAL, Quant de parametros: 0)
 Classe 22:
+  (achou, IDVAR, LOGICO, Escopo: Procura, 1, 1)
+  (sup, IDVAR, INTEIRO, Escopo: Procura, 1, 1)
   (AnaliseDeTexto, IDPROG)

@@ -264,6 +264,7 @@ Module          :   ModHeader  ModBody {
                     {
                         if($2[0] == 1 || $2[REAL] == 1 || $2[LOGICO] == 1)
                         {
+                            printf("%d %d %d %d %d", $2[0],$2[1],$2[2],$2[3],$2[4]);
                             Incompatibilidade ("Return indevido no escopo da funcao.");
                         }
                     }
@@ -309,6 +310,7 @@ ModHeader       :   Type ID OPPAR  CLPAR {
                         SetarEscopo($2);
 
                         }
+
                 |   Type ID OPPAR {
                         simb = ProcuraSimb ($2, "GLOBAL");
                         if(simb != NULL) DeclaracaoRepetida ($2);
@@ -347,10 +349,18 @@ Stats           :   STATEMENTS  {printf ("statements ");tab++;}  CompStat {tab--
                 ;
 
 
-CompStat        :   OPBRACE  {tab--;tabular();tab++;printf ("{\n");}  StatList  CLBRACE
+CompStat       :   OPBRACE  {tab--;tabular();tab++;printf ("{\n");
+                        //printf("antes: %d,%d,%d,%d,%d", $$[0],$$[1], $$[2], $$[3], $$[4]);
+                    }   StatList  CLBRACE
                     {tab--;tabular ();tab++; printf ("}\n"); $$[0] = $3[0]; $$[1] = $3[1]; $$[2] = $3[2]; $$[3] = $3[3]; $$[4] = $3[4];}
 
 StatList        :
+                {
+                    int i =0;
+                    for (i=0; i<5; i++) {
+                        $$[i] = 0;
+                    }
+                }
                 |   StatList  Statement {if ($2 != -1) {
                 if ($2 < 5) {$$[$2] = 1;}
                 else {
@@ -358,8 +368,16 @@ StatList        :
                   int gambi = $2-5;
                   for (i=0; i<5; i++) {
                     $$[i] = (gambi%10 == 1 || $1[i]==1) ? 1:0;
+                    //printf("dolar2= %d", $2);
+                    //printf("---%d, %d---", gambi%10, $1[i]);
                     gambi = gambi/10;
                   }
+                }
+                } else
+                {
+                    int i =0;
+                    for (i=0; i<5; i++) {
+                        $$[i] = 0;
                 }
                 }
 
@@ -426,7 +444,7 @@ WhileStat       :   {tabular ();} WHILE  {printf ("while ");} Expression {
                         if($4 != LOGICO){
                             Esperado("Expressao logica no cabecalho do WHILE");
                         }
-                    } DO {printf ("do \n");tab++;}  Statement {tab--; $$ = $8; }
+                    } DO {printf ("do \n");tab++;}  Statement {tab--; $$ = $8;}
                 ;
 
 
@@ -438,7 +456,8 @@ RepeatStat      :   {tabular ();} REPEAT  {printf ("repeat \n");tab++;} Statemen
                 ;
 
 ForStat         :   {tabular ();} FOR  {printf ("for ");} Variable {
-                            if($4->array == VERDADE || ($4->tvar != CARACTERE && $4->tvar != INTEIRO)) {
+                            if ($4 == NULL) NaoDeclarado ("Variavel de controle do For");
+                            else if($4->array == VERDADE || ($4->tvar != CARACTERE && $4->tvar != INTEIRO)) {
                                 Esperado("Variavel de controle do FOR escalar inteira ou escalar caractere");
                             }
                         } OPPAR  {printf ("( ");} AuxExpr4{
@@ -489,42 +508,39 @@ CallStat        :   CALL  ID  OPPAR {
                         int deuRuim = 0;
                         int tamanhoDoSubido = 0;
 
-                        while (aux != NULL)
-                        {
-                            tamanhoDoSubido ++;
-                            aux = aux->prox;
-                        }
+                        if (simb == NULL) {}
+                        else if (simb->tid != IDFUNC)   {}
+                        else if (simb->tvar != FUNCVOID){}
+                        else {
 
-                        if(tamanhoDoSubido != simb->param->tipo)
-                        {
-                            QuantidadeErradaDeArgumentos();
-                        }
-                        else
-                        {
-                            aux = $5;
-                            lista* aux2 = simb->param->prox;
-                            int i = 0;
-                            for(; i < tamanhoDoSubido; i++)
-                            {
-                                if( (aux2->tipo == INTEIRO && (aux->tipo != INTEIRO && aux->tipo != CARACTERE))  ||
-                                    (aux2->tipo == CARACTERE && (aux->tipo != INTEIRO && aux->tipo != CARACTERE)) ||
-                                    (aux2->tipo == REAL && (aux->tipo != REAL && aux->tipo != INTEIRO && aux->tipo != CARACTERE)) ||
-                                    (aux2->tipo == LOGICO && (aux->tipo != LOGICO))
-
-                                )
-                                {
-                                    TipoErradoDeArgumentos (aux2->tipo, i + 1);
-                                }
-
+                            while (aux != NULL){
+                                tamanhoDoSubido ++;
                                 aux = aux->prox;
-                                aux2 = aux2->prox;
+                            }
+                            if(tamanhoDoSubido != simb->param->tipo){
+                                QuantidadeErradaDeArgumentos();
+                            }
+                            else
+                            {
+                                aux = $5;
+                                lista* aux2 = simb->param->prox;
+                                int i = 0;
+                                for(; i < tamanhoDoSubido; i++){
+                                    if( (aux2->tipo == INTEIRO && (aux->tipo != INTEIRO && aux->tipo != CARACTERE))  ||
+                                        (aux2->tipo == CARACTERE && (aux->tipo != INTEIRO && aux->tipo != CARACTERE)) ||
+                                        (aux2->tipo == REAL && (aux->tipo != REAL && aux->tipo != INTEIRO && aux->tipo != CARACTERE)) ||
+                                        (aux2->tipo == LOGICO && (aux->tipo != LOGICO)) ){
+                                        TipoErradoDeArgumentos (aux2->tipo, i + 1);
+                                    }
+                                    aux = aux->prox;
+                                    aux2 = aux2->prox;
+                                }
                             }
                         }
-
                     }
                 ;
 
-Arguments       :
+Arguments       :  {$$ = NULL;}
                 |  ExprList {$$ = $1;}
                 ;
 
@@ -560,21 +576,21 @@ ExprList		:	Expression { $$ = (lista*) malloc (sizeof(lista)); $$->tipo = $1; $$
                     }
 				;
 
-Expression      :   AuxExpr1
+Expression      :   AuxExpr1 { $$ = $1;}
                 |  Expression  OR  {printf ("|| ");}  AuxExpr1  {
                         if ($1 != LOGICO || $4 != LOGICO)
                             Incompatibilidade ("Operando improprio para operador or");
                         $$ = LOGICO;
                     }
                 ;
-AuxExpr1        :   AuxExpr2
+AuxExpr1        :   AuxExpr2 { $$ = $1;}
                 |  AuxExpr1  AND  {printf ("&& ");}  AuxExpr2  {
                         if ($1 != LOGICO || $4 != LOGICO)
                             Incompatibilidade ("Operando improprio para operador and");
                         $$ = LOGICO;
                     }
                 ;
-AuxExpr2        :   AuxExpr3
+AuxExpr2        :   AuxExpr3 { $$ = $1;}
                 |  NOT  {printf ("! ");}  AuxExpr3  {
                         if ($3 != LOGICO)
                             Incompatibilidade ("Operando improprio para operador not");
@@ -582,7 +598,7 @@ AuxExpr2        :   AuxExpr3
                     }
                 ;
 
-AuxExpr3        :   AuxExpr4
+AuxExpr3        :   AuxExpr4 { $$ = $1;}
                 |   AuxExpr4  RELOP  {
                         switch ($2) {
                             case LT: printf ("< "); break;
@@ -607,7 +623,7 @@ AuxExpr3        :   AuxExpr4
                     }
                 ;
 
-AuxExpr4        :   Term
+AuxExpr4        :   Term { $$ = $1;}
                 |   AuxExpr4  ADOP  {
                         switch ($2) {
                             case PLUS: printf ("+ "); break;
@@ -621,7 +637,7 @@ AuxExpr4        :   Term
                     }
                 ;
 
-Term            :   Factor
+Term            :   Factor { $$ = $1;}
                 |   Term  MULTOP  {
                         switch ($2) {
                             case MULT: printf ("* "); break;
